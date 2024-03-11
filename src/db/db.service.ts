@@ -15,7 +15,7 @@ export class DbService {
 
   public albums: Album[] = [];
 
-  public favs: Favorites = {
+  public favorites: Favorites = {
     artists: [],
     albums: [],
     tracks: [],
