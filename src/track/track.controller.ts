@@ -1,4 +1,10 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Header } from '@nestjs/common';
+import { TrackService } from './track.service';
+import { Track } from '../db/models/track.model';
 
 @Controller('track')
-export class TrackController {}
+export class TrackController {
+  constructor(private trackService: TrackService) {}
+
+
+}
