@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   ForbiddenException,
+  HttpCode,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -25,12 +27,15 @@ export class UserService {
 
     return user;
   }
-
+  @HttpCode(204)
   findAll() {
     return this.dbService.users;
   }
-
+  @HttpCode(204)
   findOne(id: string) {
+    if (!id) {
+      throw new BadRequestException('Invalid user ID provided');
+    }
     const user = this.dbService.users.find((user) => user.id === id);
     if (!user) {
       throw new NotFoundException('User with this ID not found');
