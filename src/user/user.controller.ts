@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Put,
@@ -14,6 +13,8 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { plainToClass } from 'class-transformer';
+import { User } from '../db/models/user.model';
 
 @Controller('user')
 export class UserController {
@@ -21,7 +22,8 @@ export class UserController {
 
   @Post()
   create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+    const user = this.userService.create(createUserDto);
+    return plainToClass(User, user);
   }
 
   @Get()
@@ -31,7 +33,8 @@ export class UserController {
 
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.findOne(id);
+    const user = this.userService.findOne(id);
+    return user;
   }
 
   @Put(':id')

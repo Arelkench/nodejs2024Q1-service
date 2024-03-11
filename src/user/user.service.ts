@@ -24,7 +24,6 @@ export class UserService {
     };
 
     this.dbService.users.push(user);
-
     return user;
   }
   @HttpCode(204)
@@ -55,12 +54,15 @@ export class UserService {
     user.password = newPassword;
     user.version += 1;
     user.updatedAt = Date.now();
-
+    delete user.password;
     return user;
   }
 
   remove(id: string) {
     const user = this.dbService.users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException('User with this ID not found');
+    }
     const userIndex = this.dbService.users.indexOf(user);
     this.dbService.users.splice(userIndex, 1);
   }
