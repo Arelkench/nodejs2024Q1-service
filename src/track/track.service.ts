@@ -51,5 +51,13 @@ export class TrackService {
     }
     const trackIndex = this.dbService.tracks.indexOf(track);
     this.dbService.tracks.splice(trackIndex, 1);
+    const trackInFavs = this.dbService.favorites.tracks.find(
+      (track) => track.id === id,
+    );
+
+    if (trackInFavs) {
+      const trackIndex = this.dbService.favorites.tracks.indexOf(trackInFavs);
+      this.dbService.favorites.tracks.splice(trackIndex, 1);
+    }
   }
 }

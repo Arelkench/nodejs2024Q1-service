@@ -60,5 +60,12 @@ export class AlbumService {
     this.dbService.tracks
       .filter((track) => track.albumId === album.id)
       .forEach((track) => (track.albumId = null));
+    const albumInFavs = this.dbService.favorites.albums.find(
+      (album) => album.id === id,
+    );
+    if (albumInFavs) {
+      const albumIndex = this.dbService.favorites.albums.indexOf(albumInFavs);
+      this.dbService.favorites.albums.splice(albumIndex, 1);
+    }
   }
 }
