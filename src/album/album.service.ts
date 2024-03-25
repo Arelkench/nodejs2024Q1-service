@@ -1,71 +1,45 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { DbService } from '../db/db.service';
-import { v4 as uuidv4 } from 'uuid';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { Album } from './types/album.model';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AlbumService {
-  constructor(private dbService: DbService) {}
-  create(createAlbumDto: CreateAlbumDto) {
-    const album: Album = {
-      id: uuidv4(),
-      ...createAlbumDto,
-    };
-    this.dbService.albums.push(album);
-    return album;
+  constructor(private prisma: PrismaService) {}
+  async create(createAlbumDto: CreateAlbumDto) {
+    return this.prisma.album.create({ data: createAlbumDto });
   }
-  findAll() {
-    return this.dbService.albums;
-  }
-  findOne(id: string) {
-    if (!id) {
-      throw new BadRequestException('Invalid album ID provided');
-    }
-    const album = this.dbService.albums.find((album) => album.id === id);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = await this.prisma.album.findUnique({
+      where: { id },
+    });
+
     if (!album) {
-      throw new NotFoundException('Album with this ID not found');
+      throw new NotFoundException('Album not found');
     }
-    return album;
+    return this.prisma.album.update({
+      where: { id },
+      data: updateAlbumDto,
+    });
   }
-  update(id: string, updateAlbumDto: UpdateAlbumDto): Album {
-    const album = this.dbService.albums.find((album) => album.id === id);
-    if (!album) {
-      throw new NotFoundException('Album with this ID not found');
-    }
-    return Object.assign(album, updateAlbumDto);
+  async findAll() {
+    return this.prisma.album.findMany();
   }
-  remove(id: string) {
-    if (!id) {
-      throw new BadRequestException('Invalid album ID provided');
-    }
-    const album = this.dbService.albums.find((album) => album.id === id);
+  async findOne(id: string) {
+    const album = await this.prisma.album.findUnique({
+      where: { id },
+    });
     if (!album) {
-      throw new HttpException(
-        'Album with this ID not found',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('Album not found');
     }
 
-    const albumIndex = this.dbService.albums.indexOf(album);
-
-    this.dbService.albums.splice(albumIndex, 1);
-    this.dbService.tracks
-      .filter((track) => track.albumId === album.id)
-      .forEach((track) => (track.albumId = null));
-    const albumInFavs = this.dbService.favorites.albums.find(
-      (album) => album.id === id,
-    );
-    if (albumInFavs) {
-      const albumIndex = this.dbService.favorites.albums.indexOf(albumInFavs);
-      this.dbService.favorites.albums.splice(albumIndex, 1);
+    return album;
+  }
+  async remove(id: string) {
+    try {
+      await this.prisma.album.delete({ where: { id } });
+    } catch {
+      throw new NotFoundException('Album not found');
     }
   }
 }
