@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../user/types/user.type';
-import { Track } from '../track/types/track.model';
+import { Track } from '../track/types/track.type';
 import { Artist } from '../artist/types/artist.model';
 import { Album } from '../album/types/album.model';
 import { Favorites } from '../favorites/types/favorites.model';

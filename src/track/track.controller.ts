@@ -9,11 +9,12 @@ import {
   ValidationPipe,
   Put,
   HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './types/track.model';
+import { Track } from './types/track.type';
 
 @Controller('track')
 export class TrackController {
@@ -25,7 +26,7 @@ export class TrackController {
   }
 
   @Get()
-  findAll(): Track[] {
+  findAll() {
     return this.trackService.findAll();
   }
 
@@ -38,12 +39,12 @@ export class TrackController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(ValidationPipe) updateTrackDto: UpdateTrackDto,
-  ): Track {
+  ) {
     return this.trackService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.trackService.remove(id);
   }

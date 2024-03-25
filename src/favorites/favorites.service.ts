@@ -8,7 +8,7 @@ import { Favorites } from './types/favorites.model';
 import { Entity } from './types/Entity.model';
 import { Artist } from '../artist/types/artist.model';
 import { Album } from '../album/types/album.model';
-import { Track } from '../track/types/track.model';
+import { Track } from '../track/types/track.type';
 
 @Injectable()
 export class FavoritesService {
