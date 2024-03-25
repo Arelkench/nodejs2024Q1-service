@@ -9,12 +9,13 @@ import {
   ParseUUIDPipe,
   HttpCode,
   ValidationPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { plainToClass } from 'class-transformer';
-import { User } from '../db/models/user.model';
+import { User } from './types/user.type';
 
 @Controller('user')
 export class UserController {
@@ -46,7 +47,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.remove(id);
   }

@@ -4,11 +4,11 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { DbService } from '../db/db.service';
-import { Favorites } from '../db/models/favorites.model';
-import { Entity } from '../db/models/Entity.model';
-import { Artist } from '../db/models/artist.model';
-import { Album } from '../db/models/album.model';
-import { Track } from '../db/models/track.model';
+import { Favorites } from './types/favorites.model';
+import { Entity } from './types/Entity.model';
+import { Artist } from '../artist/types/artist.model';
+import { Album } from '../album/types/album.model';
+import { Track } from '../track/types/track.model';
 
 @Injectable()
 export class FavoritesService {

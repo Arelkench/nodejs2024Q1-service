@@ -9,7 +9,7 @@ import { DbService } from '../db/db.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { Album } from '../db/models/album.model';
+import { Album } from './types/album.model';
 
 @Injectable()
 export class AlbumService {

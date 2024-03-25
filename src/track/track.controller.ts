@@ -13,7 +13,7 @@ import {
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from '../db/models/track.model';
+import { Track } from './types/track.model';
 
 @Controller('track')
 export class TrackController {

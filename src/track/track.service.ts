@@ -7,7 +7,7 @@ import {
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { DbService } from '../db/db.service';
-import { Track } from '../db/models/track.model';
+import { Track } from './types/track.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

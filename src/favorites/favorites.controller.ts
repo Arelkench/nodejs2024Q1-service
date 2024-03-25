@@ -9,8 +9,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { Favorites } from '../db/models/favorites.model';
-import { Entity } from '../db/models/Entity.model';
+import { Favorites } from './types/favorites.model';
+import { Entity } from './types/Entity.model';
 
 @Controller('favs')
 export class FavoritesController {

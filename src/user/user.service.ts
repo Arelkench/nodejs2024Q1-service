@@ -7,63 +7,90 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { DbService } from '../db/db.service';
-import { User } from '../db/models/user.model';
-import { v4 as uuidv4 } from 'uuid';
+import { User } from './types/user.type';
+import { PrismaService } from '../prisma/prisma.service';
+
+const userSelectFields = {
+  id: true,
+  login: true,
+  version: true,
+  createdAt: true,
+  updatedAt: true,
+};
 
 @Injectable()
 export class UserService {
-  constructor(private dbService: DbService) {}
-  create(createUserDto: CreateUserDto) {
-    const user: User = {
-      id: uuidv4(),
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      ...createUserDto,
+  constructor(private prisma: PrismaService) {}
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.prisma.user.create({
+      data: {
+        version: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...createUserDto,
+      },
+      select: userSelectFields,
+    });
+
+    return {
+      ...user,
+      createdAt: user.createdAt.getTime(),
+      updatedAt: user.updatedAt.getTime(),
     };
-
-    this.dbService.users.push(user);
-    return user;
   }
-  @HttpCode(204)
-  findAll() {
-    return this.dbService.users;
-  }
-  @HttpCode(204)
-  findOne(id: string) {
-    if (!id) {
-      throw new BadRequestException('Invalid user ID provided');
-    }
-    const user = this.dbService.users.find((user) => user.id === id);
-    if (!user) {
-      throw new NotFoundException('User with this ID not found');
-    }
-    return user;
-  }
-
-  update(id: string, updateUserDto: UpdatePasswordDto) {
+  async update(id: string, updateUserDto: UpdatePasswordDto) {
     const { oldPassword, newPassword } = updateUserDto;
-    const user = this.dbService.users.find((user) => user.id === id);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundException('User with this ID not found');
     }
     if (oldPassword !== user.password) {
       throw new ForbiddenException('Old password is incorrect');
     }
-    user.password = newPassword;
-    user.version += 1;
-    user.updatedAt = Date.now();
-    delete user.password;
-    return user;
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: { password: newPassword, version: user.version + 1 },
+      select: userSelectFields,
+    });
+    return this.convertDate(updatedUser);
+  }
+  @HttpCode(204)
+  async findAll() {
+    const users = await this.prisma.user.findMany({
+      select: userSelectFields,
+    });
+
+    return users.map((user) => this.convertDate(user));
   }
 
-  remove(id: string) {
-    const user = this.dbService.users.find((user) => user.id === id);
+  @HttpCode(204)
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: userSelectFields,
+    });
+
     if (!user) {
-      throw new NotFoundException('User with this ID not found');
+      throw new NotFoundException('User not found');
     }
-    const userIndex = this.dbService.users.indexOf(user);
-    this.dbService.users.splice(userIndex, 1);
+
+    return this.convertDate(user);
+  }
+
+  async remove(id: string) {
+    try {
+      await this.prisma.user.delete({ where: { id } });
+    } catch {
+      throw new NotFoundException('User not found');
+    }
+  }
+  convertDate(user) {
+    return {
+      ...user,
+      createdAt: new Date(user.createdAt).getTime(),
+      updatedAt: new Date(user.updatedAt).getTime(),
+    };
   }
 }

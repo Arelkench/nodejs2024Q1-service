@@ -6,7 +6,7 @@ import {
 import { DbService } from '../db/db.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
-import { Artist } from '../db/models/artist.model';
+import { Artist } from './types/artist.model';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 
 @Injectable()
