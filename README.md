@@ -1,3 +1,4 @@
+
 # Home Library Service
 
 ## Prerequisites
@@ -10,7 +11,29 @@
 ```
 git clone git@github.com:Arelkench/nodejs2024Q1-service.git
 git clone https://github.com/Arelkench/nodejs2024Q1-service
+````
+
+## Switch branch
+
 ```
+git checkout db
+```
+
+## Create .env file by using .env.example
+
+## Docker-compose
+
+```
+docker compose up --build
+```
+
+## Docker check for vulnerabilities
+
+```
+npm run docker-audit:api
+npm run docker-audit:db
+```
+
 
 ## Installing NPM modules
 
