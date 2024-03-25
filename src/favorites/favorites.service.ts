@@ -1,61 +1,120 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { DbService } from '../db/db.service';
-import { Favorites } from './types/favorites.model';
-import { Entity } from './types/Entity.model';
-import { Artist } from '../artist/types/artist.model';
-import { Album } from '../album/types/album.model';
-import { Track } from '../track/types/track.type';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+const defaultId = '1';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private dbService: DbService) {}
+  constructor(private readonly prisma: PrismaService) {}
+  async findAll() {
+    const favs = await this.prisma.favorites.findUnique({
+      where: { id: '1' },
+      select: { artists: true, albums: true, tracks: true },
+    });
 
-  public findAll(): Favorites {
-    console.log(this.dbService.favorites);
-    return this.dbService.favorites;
+    if (!favs) {
+      return { artists: [], albums: [], tracks: [] };
+    }
+
+    return favs;
   }
 
-  public add(entityName: Entity, id: string): void {
-    const entity = this.findEntity(entityName, id);
-
-    const entityInFavs = this.dbService.favorites[entityName].find(
-      (entity: Artist | Album | Track) => entity.id === id,
-    );
-
-    if (!entityInFavs) {
-      this.dbService.favorites[entityName].push(entity);
+  async addArtist(id: string) {
+    try {
+      return await this.prisma.artist.update({
+        where: { id },
+        data: {
+          favorites: {
+            connectOrCreate: {
+              where: { id: defaultId },
+              create: { id: defaultId },
+            },
+          },
+        },
+      });
+    } catch {
+      throw new UnprocessableEntityException("Artist doesn't exist");
     }
   }
 
-  public delete(entityName: Entity, id: string): void {
-    const entity = this.dbService.favorites[entityName].find(
-      (entity: Artist | Album | Track) => entity.id === id,
-    );
-
-    if (!entity) {
-      throw new NotFoundException(`${entityName} with this ID not found`);
+  async deleteArtist(id: string) {
+    try {
+      return this.prisma.artist.update({
+        where: { id },
+        data: {
+          favorites: {
+            disconnect: { id: defaultId },
+          },
+        },
+      });
+    } catch {
+      throw new UnprocessableEntityException("Artist doesn't exist");
     }
-
-    const entityIndex = this.dbService.favorites[entityName].indexOf(entity);
-
-    this.dbService.favorites[entityName].splice(entityIndex, 1);
   }
 
-  private findEntity(entityName: Entity, id: string): Artist | Album | Track {
-    const entity = this.dbService[entityName].find(
-      (entity: Artist | Album | Track) => entity.id === id,
-    );
-
-    if (!entity) {
-      throw new UnprocessableEntityException(
-        `${entityName} with this ID doesn't exist`,
-      );
+  async addAlbum(id: string) {
+    try {
+      return await this.prisma.album.update({
+        where: { id },
+        data: {
+          favorites: {
+            connectOrCreate: {
+              where: { id: defaultId },
+              create: { id: defaultId },
+            },
+          },
+        },
+      });
+    } catch {
+      throw new UnprocessableEntityException("Album doesn't exist");
     }
+  }
 
-    return entity;
+  async deleteAlbum(id: string) {
+    try {
+      return await this.prisma.album.update({
+        where: { id },
+        data: {
+          favorites: {
+            disconnect: { id: defaultId },
+          },
+        },
+      });
+    } catch {
+      throw new UnprocessableEntityException("Album doesn't exist");
+    }
+  }
+
+  async addTrack(id: string) {
+    try {
+      return await this.prisma.track.update({
+        where: { id },
+        data: {
+          favorites: {
+            connectOrCreate: {
+              where: { id: defaultId },
+              create: { id: defaultId },
+            },
+          },
+        },
+      });
+    } catch {
+      throw new UnprocessableEntityException("Track doesn't exist");
+    }
+  }
+
+  async deleteTrack(id: string) {
+    try {
+      return this.prisma.track.update({
+        where: { id },
+        data: {
+          favorites: {
+            disconnect: { id: defaultId },
+          },
+        },
+      });
+    } catch {
+      throw new UnprocessableEntityException("Track doesn't exist");
+    }
   }
 }

@@ -1,56 +1,53 @@
 import {
-  BadRequestException,
   Controller,
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { Favorites } from './types/favorites.model';
-import { Entity } from './types/Entity.model';
 
 @Controller('favs')
 export class FavoritesController {
-  private entities = ['track', 'album', 'artist'];
-
-  constructor(private readonly favouritesService: FavoritesService) {}
-
+  constructor(private readonly favsService: FavoritesService) {}
   @Get()
-  findAll(): Favorites {
-    return this.favouritesService.findAll();
+  getAll() {
+    return this.favsService.findAll();
   }
 
-  @Post(':entity/:id')
-  add(
-    @Param('entity') entity: string,
-    @Param('id', ParseUUIDPipe) id: string,
-  ): string {
-    if (this.entities.includes(entity)) {
-      this.favouritesService.add(this.convertToPlural(entity), id);
-      return `${entity} successfully added to favorites`;
-    } else {
-      throw new BadRequestException('Invalid entity');
-    }
+  @Post('artist/:id')
+  addArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.addArtist(id);
   }
 
-  @Delete(':entity/:id')
-  @HttpCode(204)
-  delete(
-    @Param('entity') entity: string,
-    @Param('id', ParseUUIDPipe) id: string,
-  ): string {
-    if (this.entities.includes(entity)) {
-      this.favouritesService.delete(this.convertToPlural(entity), id);
-      return `${entity} successfully deleted from favorites`;
-    } else {
-      throw new BadRequestException('Invalid entity');
-    }
+  @Delete('artist/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.deleteArtist(id);
   }
 
-  private convertToPlural(entityName: string): Entity {
-    return `${entityName}s` as Entity;
+  @Post('album/:id')
+  addAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.addAlbum(id);
+  }
+
+  @Delete('album/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.deleteAlbum(id);
+  }
+
+  @Post('track/:id')
+  addTack(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.addTrack(id);
+  }
+
+  @Delete('track/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteTrack(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favsService.deleteTrack(id);
   }
 }
