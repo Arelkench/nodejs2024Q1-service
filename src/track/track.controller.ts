@@ -15,7 +15,6 @@ import {
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './types/track.type';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('track')
