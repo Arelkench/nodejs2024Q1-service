@@ -7,14 +7,9 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateRefreshTokenDto } from './dto/create-refresh-token.dto';
-import { JwtPayload, decode } from 'jsonwebtoken';
+import { decode } from 'jsonwebtoken';
 import { PrismaService } from '../prisma/prisma.service';
-
-interface Payload extends JwtPayload {
-  userId: string;
-  login: string;
-}
-
+import { JwtPayload } from './types/types';
 @Injectable()
 export class AuthService {
   constructor(
@@ -62,14 +57,14 @@ export class AuthService {
       throw new ForbiddenException('Refresh token is not valid');
     }
 
-    const { userId, login } = decode(refreshToken) as Payload;
+    const { userId, login } = decode(refreshToken) as JwtPayload;
 
     const newTokens = await this.generateTokens({ userId, login });
 
     return { userId, login, ...newTokens };
   }
 
-  async generateTokens(payload: Payload) {
+  async generateTokens(payload: JwtPayload) {
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_KEY,
       expiresIn: process.env.TOKEN_EXPIRE_TIME,
