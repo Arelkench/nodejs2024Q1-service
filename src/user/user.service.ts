@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ForbiddenException,
   HttpCode,
   Injectable,
@@ -7,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from './types/user.type';
 import { PrismaService } from '../prisma/prisma.service';
 
 const userSelectFields = {
@@ -34,8 +32,8 @@ export class UserService {
 
     return {
       ...user,
-      createdAt: user.createdAt.getTime(),
-      updatedAt: user.updatedAt.getTime(),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
   async update(id: string, updateUserDto: UpdatePasswordDto) {

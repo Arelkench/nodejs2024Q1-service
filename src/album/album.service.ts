@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { Album } from '@prisma/client';
 
 @Injectable()
 export class AlbumService {
@@ -9,7 +10,7 @@ export class AlbumService {
   async create(createAlbumDto: CreateAlbumDto) {
     return this.prisma.album.create({ data: createAlbumDto });
   }
-  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
     try {
       return await this.prisma.album.update({
         where: { id },
@@ -19,11 +20,11 @@ export class AlbumService {
       throw new NotFoundException('Album not found');
     }
   }
-  async findAll() {
+  async findAll(): Promise<Album[]> {
     return this.prisma.album.findMany();
   }
-  async findOne(id: string) {
-    const album = await this.prisma.album.findUnique({
+  async findOne(id: string): Promise<Album> {
+    const album: Album = await this.prisma.album.findUnique({
       where: { id },
     });
     if (!album) {

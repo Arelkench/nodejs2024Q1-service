@@ -1,13 +1,15 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Favorites } from './types/favorites.model';
+import { Album, Artist, Track } from '@prisma/client';
 
 const defaultId = '1';
 
 @Injectable()
 export class FavoritesService {
   constructor(private readonly prisma: PrismaService) {}
-  async findAll() {
-    const favs = await this.prisma.favorites.findUnique({
+  async findAll(): Promise<Favorites> {
+    const favs: Favorites = await this.prisma.favorites.findUnique({
       where: { id: '1' },
       select: { artists: true, albums: true, tracks: true },
     });
@@ -19,7 +21,7 @@ export class FavoritesService {
     return favs;
   }
 
-  async addArtist(id: string) {
+  async addArtist(id: string): Promise<Artist> {
     try {
       return await this.prisma.artist.update({
         where: { id },
@@ -37,7 +39,7 @@ export class FavoritesService {
     }
   }
 
-  async deleteArtist(id: string) {
+  async deleteArtist(id: string): Promise<Artist> {
     try {
       return this.prisma.artist.update({
         where: { id },
@@ -52,7 +54,7 @@ export class FavoritesService {
     }
   }
 
-  async addAlbum(id: string) {
+  async addAlbum(id: string): Promise<Album> {
     try {
       return await this.prisma.album.update({
         where: { id },
@@ -70,7 +72,7 @@ export class FavoritesService {
     }
   }
 
-  async deleteAlbum(id: string) {
+  async deleteAlbum(id: string): Promise<Album> {
     try {
       return await this.prisma.album.update({
         where: { id },
@@ -85,7 +87,7 @@ export class FavoritesService {
     }
   }
 
-  async addTrack(id: string) {
+  async addTrack(id: string): Promise<Track> {
     try {
       return await this.prisma.track.update({
         where: { id },
@@ -103,7 +105,7 @@ export class FavoritesService {
     }
   }
 
-  async deleteTrack(id: string) {
+  async deleteTrack(id: string): Promise<Track> {
     try {
       return this.prisma.track.update({
         where: { id },
