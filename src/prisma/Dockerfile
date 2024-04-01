@@ -1,2 +1,1 @@
-FROM postgres:13.5-alpine
-CMD ["postgres"]
+FROM postgres:16.2-alpine

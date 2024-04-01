@@ -12,13 +12,6 @@
 git clone git@github.com:Arelkench/nodejs2024Q1-service.git
 git clone https://github.com/Arelkench/nodejs2024Q1-service
 ````
-
-## Switch branch
-
-```
-git checkout db
-```
-
 ## Create .env file by using .env.example
 
 ## Docker-compose
